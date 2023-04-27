@@ -11,6 +11,7 @@ rdf2tree
 
 # Data
 rdf
+!src/rdf
 
 # ROOT files
 *.root
