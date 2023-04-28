@@ -28,6 +28,7 @@ Int_t ModuleDecoderV7XX::Decode(char* buffer, const int &size) {
     }
 
     // Decode
+    Clear();
     for (UInt_t i=1; i!=evtsize; i++) {
          if (evtdata[i] & kMaskHeader) {
              geo = (evtdata[i] & kMaskGeo) >> kShiftGeo;
