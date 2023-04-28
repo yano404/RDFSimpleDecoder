@@ -1,0 +1,20 @@
+#!/bin/bash
+
+RDFDIR=./rdf
+OUTPUTDIR=./root
+
+if [ $# -ne 1 ]; then
+  echo "Usage: ./decode <RUNNUMBER>"
+  exit 1
+fi
+
+runnumber=$(printf "%04d" $((10#"$1")) )
+
+rdf="${RDFDIR}/${runnumber}.rdf"
+outfile="${OUTPUTDIR}/${runnumber}.root"
+
+if [ -f ${rdf} ]; then
+  ./rdf2tree $rdf $outfile
+else
+  echo "${rdf} does not exist"
+fi

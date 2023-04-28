@@ -134,11 +134,14 @@ Bool_t RDFEventStore::DecodeHeader() {
     char runnumber[]="xxxx";
     char starttime[]="xxxxxxxx";
     char runheader[kRunHeaderCharLength];
+    char printdate[]="xxxxxxxxx";
     memcpy(runnumber, &(fCurrentBlock[kRunNumberIdx]), kRunNumberCharLength);
     memcpy(starttime, &(fCurrentBlock[kRunStartTimeIdx]), kRunStartTimeCharLength);
+    memcpy(printdate, &(fCurrentBlock[kPrintDateIdx]), kPrintDateCharLength);
     memcpy(runheader, &(fCurrentBlock[kRunHeaderIdx]), kRunHeaderCharLength);
     fRunNumber = atoi(runnumber);
     fStartTime = TString(starttime);
+    fPrintDate = printdate;
     fRunHeader = runheader;
     return kTRUE;
 }
@@ -149,15 +152,15 @@ Bool_t RDFEventStore::DecodeEnder() {
     }
     char stoptime[]="xxxxxxxx";
     char printtime[]="xxxxxxxx";
-    char printdate[]="xxxxxxxxx";
+    //char printdate[]="xxxxxxxxx";
     char runender[kRunEnderCharLength];
     memcpy(stoptime, &(fCurrentBlock[kRunStopTimeIdx]), kRunStopTimeCharLength);
     memcpy(printtime, &(fCurrentBlock[kPrintTimeIdx]), kPrintTimeCharLength);
-    memcpy(printdate, &(fCurrentBlock[kPrintDateIdx]), kPrintDateCharLength);
+    //memcpy(printdate, &(fCurrentBlock[kPrintDateIdx]), kPrintDateCharLength);
     memcpy(runender, &(fCurrentBlock[kRunEnderIdx]), kRunEnderCharLength);
     fStopTime = stoptime;
     fPrintTime = printtime;
-    fPrintDate = printdate;
+    //fPrintDate = printdate;
     fRunEnder = runender;
     return kTRUE;
 }
