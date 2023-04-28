@@ -3,6 +3,7 @@
  */
 
 #include <iostream>
+#include <iomanip>
 #include <TFile.h>
 #include <TTree.h>
 #include <TArrayL.h>
@@ -25,8 +26,8 @@ int main(int argc, char *argv[]){
     char* rdffilename = argv[1];
     char* outfilename = argv[2];
 
-    std::cout << "Input  = " << rdffilename << std::endl;
-    std::cout << "Output = " << outfilename << std::endl;
+    std::cout << "Input  : " << rdffilename << std::endl;
+    std::cout << "Output : " << outfilename << std::endl;
 
     // Initialize
     // RDF event store
@@ -49,10 +50,10 @@ int main(int argc, char *argv[]){
     TFile *fout = TFile::Open(outfilename, "RECREATE");
     // Create tree & branch
     TTree *tree = new TTree("tree", "tree");
-    tree->Branch("tdc", tdc, "tdc[16]/I");
-    tree->Branch("qdc", qdc, "qdc[16]/I");
-    tree->Branch("adc", adc, "adc[16]/I");
-    tree->Branch("sca", sca, "sca[16]/I");
+    tree->Branch("tdc", tdc, Form("tdc[%d]/I", NCH_V7XXN));
+    tree->Branch("qdc", qdc, Form("qdc[%d]/I", NCH_V7XXN));
+    tree->Branch("adc", adc, Form("adc[%d]/I", NCH_V7XXN));
+    tree->Branch("sca", sca, Form("sca[%d]/I", NCH_V7XXN));
 
     // Scaler array (for block read mode)
     TArrayL scablk = TArrayL(NCH_V560);
@@ -127,14 +128,17 @@ int main(int argc, char *argv[]){
     fout->Close();
 
     // Print Runinfo
-    std::cout << "Run " << eventstore->GetRunNumber() << std::endl;
-    std::cout << "Date  : " << eventstore->GetPrintDate() << std::endl;
-    std::cout << "Start : " << eventstore->GetStartTime() << std::endl;
-    std::cout << "Stop  : " << eventstore->GetStopTime() << std::endl;
-    std::cout << "Header" << std::endl;
+    std::cout << "Run    : "; 
+    printf("%04d", eventstore->GetRunNumber());
+    std::cout << std::endl;
+    std::cout << "Date   : " << eventstore->GetPrintDate() << std::endl;
+    std::cout << "Start  : " << eventstore->GetStartTime() << std::endl;
+    std::cout << "Stop   : " << eventstore->GetStopTime() << std::endl;
+    std::cout << "Header : ";
     std::cout << eventstore->GetRunHeader() << std::endl;
-    std::cout << "Ender" << std::endl;
+    std::cout << "Ender  : ";
     std::cout << eventstore->GetRunEnder() << std::endl;
+    std::cout << "NEvent : " << eventstore->GetEventCount() << std::endl;
 
     return 0;
 }
