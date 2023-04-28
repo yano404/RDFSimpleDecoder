@@ -27,30 +27,37 @@ int main(int argc, char *argv[]){
 
     std::cout << "Input  = " << rdffilename << std::endl;
     std::cout << "Output = " << outfilename << std::endl;
+
     // Initialize
     // RDF event store
     auto *eventstore = new RDFEventStore(rdffilename);
+    
     // Module decoders
     ModuleDecoderV7XX decoderV775 = ModuleDecoderV7XX(1, "V775N", kTRUE);
     ModuleDecoderV7XX decoderV792 = ModuleDecoderV7XX(2, "V792N", kTRUE);
     ModuleDecoderV7XX decoderV785 = ModuleDecoderV7XX(3, "V785N", kTRUE);
     ModuleDecoderV560 decoderV560 = ModuleDecoderV560(4, "V560", 0);
+    
     // Data array
     Int_t tdc[NCH_V7XXN];
     Int_t qdc[NCH_V7XXN];
     Int_t adc[NCH_V7XXN];
     Int_t sca[NCH_V560];
-    TArrayL scablk = TArrayL(NCH_V560);
-    // Root file
-    TFile *fout = TFile::Open(outfilename, "RECREATE");
-    TTree *tree = new TTree("tree", "tree");
-    tree->Branch("tdcraw", tdc, "tdcraw[16]/I");
-    tree->Branch("qdcraw", qdc, "qdcraw[16]/I");
-    tree->Branch("adcraw", adc, "adcraw[16]/I");
-    tree->Branch("scaraw", sca, "scaraw[16]/I");
     char scablkbuffer[NCH_V560*4];
+
+    // Open Root file
+    TFile *fout = TFile::Open(outfilename, "RECREATE");
+    // Create tree & branch
+    TTree *tree = new TTree("tree", "tree");
+    tree->Branch("tdc", tdc, "tdc[16]/I");
+    tree->Branch("qdc", qdc, "qdc[16]/I");
+    tree->Branch("adc", adc, "adc[16]/I");
+    tree->Branch("sca", sca, "sca[16]/I");
+
+    // Scaler array (for block read mode)
+    TArrayL scablk = TArrayL(NCH_V560);
     
-    // Open file
+    // Open RDF file
     if (!eventstore->Open()) {
         // Fail to open the file
         return 1;
@@ -72,33 +79,33 @@ int main(int argc, char *argv[]){
                         decoderV785.Decode(eventstore->fCurrentSegment, eventstore->GetCurrentSegmentSize());
                     }
                     // Fill data
-                    for (Int_t i=0; i!=NCH_V7XXN; i++) {
+                    for (Int_t ch=0; ch!=NCH_V7XXN; ch++) {
                         // SegID=1 V775
-                        if (decoderV775.IsOV(i)) {
-                            tdc[i] = OV_VALUE;
-                        } else if (decoderV775.IsUN(i)) {
-                            tdc[i] = UN_VALUE;
+                        if (decoderV775.IsOV(ch)) {
+                            tdc[ch] = OV_VALUE;
+                        } else if (decoderV775.IsUN(ch)) {
+                            tdc[ch] = UN_VALUE;
                         } else {
-                            tdc[i] = decoderV775.GetADC(i);
+                            tdc[ch] = decoderV775.GetADC(ch);
                         }
                         // SegID=2 V792
-                        if (decoderV792.IsOV(i)) {
-                            qdc[i] = OV_VALUE;
-                        } else if (decoderV792.IsUN(i)) {
-                            qdc[i] = UN_VALUE;
+                        if (decoderV792.IsOV(ch)) {
+                            qdc[ch] = OV_VALUE;
+                        } else if (decoderV792.IsUN(ch)) {
+                            qdc[ch] = UN_VALUE;
                         } else {
-                            qdc[i] = decoderV792.GetADC(i);
+                            qdc[ch] = decoderV792.GetADC(ch);
                         }
                         // SegID=3 V785
-                        if (decoderV785.IsOV(i)) {
-                            adc[i] = OV_VALUE;
-                        } else if (decoderV785.IsUN(i)) {
-                            adc[i] = UN_VALUE;
+                        if (decoderV785.IsOV(ch)) {
+                            adc[ch] = OV_VALUE;
+                        } else if (decoderV785.IsUN(ch)) {
+                            adc[ch] = UN_VALUE;
                         } else {
-                            adc[i] = decoderV785.GetADC(i);
+                            adc[ch] = decoderV785.GetADC(ch);
                         }
                         // SegID=4 V560
-                        //sca[i] = decoderV560.GetCount(i);
+                        //sca[ch] = decoderV560.GetCount(ch);
                     }
                     tree->Fill();
                 } else {
@@ -106,8 +113,8 @@ int main(int argc, char *argv[]){
                     // Read scaler
                     memcpy(scablkbuffer, &(eventstore->fCurrentBlock[eventstore->kBlockSize - NCH_V560*4]), NCH_V560*4);
                     decoderV560.Decode(scablkbuffer, NCH_V560*4);
-                    for (Int_t i=0; i!=NCH_V560; i++) {
-                        scablk[i] = decoderV560.GetCount(i);
+                    for (Int_t ch=0; ch!=NCH_V560; ch++) {
+                        scablk[ch] = decoderV560.GetCount(ch);
                     }
                 }
             }
