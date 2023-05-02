@@ -37,7 +37,7 @@ int main(int argc, char *argv[]){
     ModuleDecoderV7XX decoderV775 = ModuleDecoderV7XX(1, "V775N", kTRUE);
     ModuleDecoderV7XX decoderV792 = ModuleDecoderV7XX(2, "V792N", kTRUE);
     ModuleDecoderV7XX decoderV785 = ModuleDecoderV7XX(3, "V785N", kTRUE);
-    ModuleDecoderV560 decoderV560 = ModuleDecoderV560(4, "V560", 0);
+    ModuleDecoderV560 decoderV560 = ModuleDecoderV560(4, "V560", 0); // read scaler block by block
     
     // Data array
     Int_t tdc[NCH_V7XXN];
@@ -53,7 +53,7 @@ int main(int argc, char *argv[]){
     tree->Branch("tdc", tdc, Form("tdc[%d]/I", NCH_V7XXN));
     tree->Branch("qdc", qdc, Form("qdc[%d]/I", NCH_V7XXN));
     tree->Branch("adc", adc, Form("adc[%d]/I", NCH_V7XXN));
-    tree->Branch("sca", sca, Form("sca[%d]/I", NCH_V7XXN));
+    tree->Branch("sca", sca, Form("sca[%d]/I", NCH_V560));
 
     // Scaler array (for block read mode)
     TArrayL scablk = TArrayL(NCH_V560);
