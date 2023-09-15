@@ -9,8 +9,7 @@
 rdf2tree
 
 # Data
-rdf
-!src/rdf
+/rdf
 
 # notebooks
 notebooks
