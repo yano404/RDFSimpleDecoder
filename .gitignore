@@ -6,15 +6,11 @@
 **/.DS_Store
 
 # Binaries
-*.o
 rdf2tree
 
 # Data
 rdf
 !src/rdf
-
-# ROOT files
-*.root
 
 # notebooks
 notebooks
