@@ -8,7 +8,7 @@ if [ $# -ne 1 ]; then
   exit 1
 fi
 
-runnumber=$(printf "%04d" $((10#"$1")) )
+runnumber=$(printf "%04d" $((10#$1)) )
 
 rdf="${RDFDIR}/${runnumber}.rdf"
 outfile="${OUTPUTDIR}/${runnumber}.root"
